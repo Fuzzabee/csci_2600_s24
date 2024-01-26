@@ -66,9 +66,28 @@ Correct Code
 						- Notation for weakest precondition:
 							- wp("x=expression;", {Q} = {Q'})
 								- wp = Weakest precondition
+								- wp(code) is unique
 								- Weakest precondition is the minimal input conditions that guarantee the postcondition
+								- T --> U (T implies U) means T is stronger than U
+								- Logical simplications are the same Q
+									- { x > -1 } = { x >= 0}
 
 							Which is stronger? ( '-->' means implies )
 							y > 0 && y == 0 		or 		x > 0 && y >= 0 		(Left, y == 0 --> y >= 0)
 							0 <= x <= 10			or 		0 <= x <= 1 			(Right, 0 <= x <= 1 --> 0 <= x <= 10)
 							x == 5 && y % 4 == 2 	or 		x = 5 && y % 2 = 0 		(Left, y % 4 == 2 --> y % 2 == 0)
+
+							- Starting with a postcondition, what is the weakest precondition that makes the postcondition true?
+								- What must be true beforehand to make the postcondition true
+								- Weakest preconditions yield the strongest specifications for computation
+
+							Let the following be true:
+								P --> Q 	Q --> R 	S --> T 	T --> U
+								{ Q } code { T }
+
+								Which of the following are true?
+
+								{ P } code { T }	TRUE
+								{ R } code { T }	FALSE
+								{ Q } code { S }	FALSE
+								{ Q } code { U }	TRUE
