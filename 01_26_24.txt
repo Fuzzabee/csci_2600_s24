@@ -87,7 +87,7 @@ Correct Code
 
 								Which of the following are true?
 
-								{ P } code { T }	TRUE
-								{ R } code { T }	FALSE
-								{ Q } code { S }	FALSE
-								{ Q } code { U }	TRUE
+								{ P } code { T }	TRUE, Weaker precondition
+								{ R } code { T }	FALSE, Stronger precondition
+								{ Q } code { S }	FALSE, Weaker postcondition
+								{ Q } code { U }	TRUE, Stronger postcondition
