@@ -1,0 +1,74 @@
+Correct Code
+	Conforms to some Specification
+
+	Precondition		- Conditions holding before execution
+	Postcondition		- Conditions must hold after code execution (WRT precondition)
+
+	Specification 		- Contract between a function and its caller
+						- Caller must obey preconditions
+						- Function "promises" postcondition if precondition holds
+						- Type signature is also a contract
+							- int sum(int[] arr, int len)
+								- Precondition: arguments are an array of ints and an int
+								- Postcondition: Result is an int
+
+	Forward Reasoning	- Given a precondition, does postcondition hold?
+							- Verify code works correctly
+							- Does the code produce output that matches postcondition?
+
+							// Precondition: x is even && x >= 0 
+							x = x + 3;		// x is odd and x >= 3
+							y = 2x;			// y is even and y >= 6
+							x = 5;			// x = 5
+							// What is the postcondition?
+							// x == 5 && y % 4 == 2 && y >= 6
+
+							// Precondition: x0 > y0
+							z = x;			// z0 == x0 && z0 > y0 && x0 > y0
+							x = y;			// x1 == y0 && z0 > x1 && z0 > y0	
+							y = z;			// y1 == z0 && z0 > x1 && y1 > x1
+							// What is the postcondition?
+							// y == z && x == y0 && z = x0
+
+	Backward Reasoning	- Given a postcondition, what is proper precondition?
+							- Verify code works correctly
+							- What input caused an error?
+
+							// What is the precondition?
+							// 2(x + 3) > 5 ==> 2x + 6 > 5 ==> 2x > -1 ==> x > -1/2 ==> x > 0 (iff x is int)
+							x = x + 3;		// 2(x + 3) > 5
+							y = 2x;			// 2x > 5
+							x = 5;			// y > 5
+							// Postcondition: y > x
+
+	Forward vs Backward
+		Reasoning		- Forward reasoning may seem more intuitive, just simulates code
+							- Introduces facts that might be irrelevant
+							- Takes long to prove task or realize task is hopeless
+						- Backward reasoning is usually more helpful
+							- Given a specific goal, shows what MUST hold beforehand to achieve goal
+							- Given an error, gives input that exposes error
+
+	Loop Invariants		- TODO
+
+	Hoare Logic			- Formal framework for reasoning about code
+							- Mechanizes the process of reasoning about code
+						- Hoare Triple: {P} code {Q}
+							- P and Q are logical statements about program values, and code is program code
+							- "{P} code {Q}" means "If program code is started in a state satisfying P, if it terminates,
+							   it will terminate in a state satisfying Q"
+							- If hoare triple is false, provide a counter example
+
+							{ x>0 } x++ { x>1 } is TRUE
+							{ x>0 } x++ { x>-1 } is TRUE
+							{ x>=0 } x++ { x>1 } is FALSE, x == 0 ==> x == 1 {Fails x>1}
+
+						- Notation for weakest precondition:
+							- wp("x=expression;", {Q} = {Q'})
+								- wp = Weakest precondition
+								- Weakest precondition is the minimal input conditions that guarantee the postcondition
+
+							Which is stronger? ( '-->' means implies )
+							y > 0 && y == 0 		or 		x > 0 && y >= 0 		(Left, y == 0 --> y >= 0)
+							0 <= x <= 10			or 		0 <= x <= 1 			(Right, 0 <= x <= 1 --> 0 <= x <= 10)
+							x == 5 && y % 4 == 2 	or 		x = 5 && y % 2 = 0 		(Left, y % 4 == 2 --> y % 2 == 0)
