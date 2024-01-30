@@ -51,7 +51,16 @@ Correct Code
 							- Given an error, gives input that exposes error
 							- Strongest postcondition guarantees as much as we can
 
-	Loop Invariants		- TODO
+	Loop Invariants		- Computing weakest precondition for loops is, in general, a hard problem
+						- We assume we can find an INVARIANT for the loop
+							- Something that gives us information about the loop and can be rleied upon to be true before and
+							  after each execution of the loop
+						- If we knew how many iterations, we could unroll the loop
+						- Two things to prove
+							- It computes correct values (Partial Correctness)
+								- Postcondition holds on loop exit
+							- It terminates (not infinite)
+							- Total correctness = Partial correctness + Loop termination
 
 	Hoare Logic			- Formal framework for reasoning about code
 							- Mechanizes the process of reasoning about code
@@ -160,4 +169,4 @@ Correct Code
 								{ P } code { T }	TRUE, Weaker precondition
 								{ R } code { T }	FALSE, Stronger precondition
 								{ Q } code { S }	FALSE, Weaker postcondition
-								{ Q } code { U }	TRUE, Stronger postcondition
+								{ Q } code { U }	TRUE, Stronger postcondition	
