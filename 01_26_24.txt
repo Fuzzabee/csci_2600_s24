@@ -45,9 +45,11 @@ Correct Code
 		Reasoning		- Forward reasoning may seem more intuitive, just simulates code
 							- Introduces facts that might be irrelevant
 							- Takes long to prove task or realize task is hopeless
+							- We want to find the weakest precondition "wp(code, Q)"
 						- Backward reasoning is usually more helpful
 							- Given a specific goal, shows what MUST hold beforehand to achieve goal
 							- Given an error, gives input that exposes error
+							- Strongest postcondition guarantees as much as we can
 
 	Loop Invariants		- TODO
 
@@ -58,6 +60,12 @@ Correct Code
 							- "{P} code {Q}" means "If program code is started in a state satisfying P, if it terminates,
 							   it will terminate in a state satisfying Q"
 							- If hoare triple is false, provide a counter example
+							- We can substitute a stronger precondition and the triple can still be true.
+								- Usually want weakest precondition
+								- Requires less of client code
+							- We can substitute a weaker postcondition and the triple can still be true
+								- Usually want strongest postcondition
+								- Guarantees more to the client code
 
 							{ x>0 } x++ { x>1 } is TRUE
 							{ x>0 } x++ { x>-1 } is TRUE
@@ -76,6 +84,68 @@ Correct Code
 							y > 0 && y == 0 		or 		x > 0 && y >= 0 		(Left, y == 0 --> y >= 0)
 							0 <= x <= 10			or 		0 <= x <= 1 			(Right, 0 <= x <= 1 --> 0 <= x <= 10)
 							x == 5 && y % 4 == 2 	or 		x = 5 && y % 2 = 0 		(Left, y % 4 == 2 --> y % 2 == 0)
+
+							Ex. (Slide 46)
+							Consider x = x + 1 and the postcondition x > 0
+							x > 0 is a valid precondition
+								{x > 0} x = x + 1 {x > 0} TRUE
+							x > -1 is also valid precondition
+								{x > -1} x = x + 1 {x > 0} TRUE
+							x > -1 is weaker than x > 0
+								{x > 0} --> {x > -1}
+							x > -1 is the weakest precondition
+								wp(x = x + 1, x > 0) = x > -1
+									CODE 		Q 		Q'
+
+							Ex. (Slide 50)
+							// Precondition = ???
+							// wp("x = 0;", x > -1) = True, therefore, doesn't need a precondition, always True
+							x = 0;
+							// Postcondition for x = 0; same as
+							// Precondition for y = x + 1;
+							// wp("y = x + 1;", y > 0) = x > -1
+							y = x + 1;
+							// Postcondition: y > 0
+
+							Ex. (Slide 53)
+							// Precondition: ???
+							// wp("x = x + 1", x + y > 1) = x + 1 + y > 1 = x + y > 0
+							x = x + 1;
+							// wp("y = x + y", y > 1) = x + y > 1
+							y = x + y;
+							// Postcondition: y > 1
+
+							Ex. (Slide 59)
+							// Precondition: ???
+							// (x != 0 && x > 0) || (x == 0 && 0 > -1) = (x > 0) || (x == 0 && TRUE) =
+							// x > 0 || x == 0 = x >= 0
+							z = 0;
+							// (x != 0 && x > 0) || (x == 0 && z > -1)
+							if (x != 0) {
+								// wp{"z = x" z > 0} = x > 0
+								z = x;
+								// wp{"}", z > 0} = z > 0
+							} else {
+								// wp{"z = z + 1" z > 0} = z + 1 > 0 = z > -1
+								z = z + 1;
+								// wp{"}", z > 0} = z > 0
+							}
+							// Postcondition: z > 0
+
+							Ex. (Slide 61) (x IS INTEGER)
+							// Precondition: ???
+							// (x < 5 && x * x >= 9) || (x >= 5 && x >= 8) = (x < 5 && abs(x) >= 3) || (x >= 5) =
+							// x <= -3 || x == 3 || x == 4 || x >= 8
+							if (x < 5) {
+								// wp{"x = x * x", x >= 0} = x * x >= 9
+								x = x * x;
+								// wp{"}", x >= 0} = x >= 9
+							} else {
+								// wp{"x = x + 1", x >= 0} = x + 1 >= 0 = x >= 8
+								x = x + 1;
+								// wp{"}", x >= 0} = x >= 9
+							}
+							// Postcondition: x >= 9
 
 							- Starting with a postcondition, what is the weakest precondition that makes the postcondition true?
 								- What must be true beforehand to make the postcondition true
