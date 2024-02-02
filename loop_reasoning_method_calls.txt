@@ -1,0 +1,164 @@
+Reasoning about loops
+	- More complicated than sequence or if... else...
+		- Unknown number of iterations and unknown number of paths
+		- Recursion adds an additional level of complexity
+	- Use a "loop invariant" to reason about loop
+	- Two things to prove
+		- Computes correct values (partial correctness)
+			- Postcondition holds on loop exit
+		- It terminates (not an infinite loop)
+		- Total correctness = Partial correctness + Loop termination
+
+Loop Invariant
+	- Property of a program loop
+	- True before first iteration
+	- True after each iteration
+		- Not necessarily between statements in the loop
+	- It is a logical assertion
+		- Abstract specification of the loop
+		- A statement about the loop
+	- For partial correctness...
+		- Loop exit condition and the LI must imply the desired postcondition
+		- If the loop exists, the correct result is calculated
+	- Why do we care?
+		- If we have a LI that implies the postcondition at exit, we can be somewhat confident that the
+		loop computes the correct result
+	- How do we show partial correctness?
+		- Induction
+
+		EXAMPLE
+		Precondition: {x >= 0} // Assume ints
+		i = x
+		z = 0
+		{ LOOP INVARIANT (LI): i + z == x && i >= 0 }
+		while (i > 0) {
+			z = z + 1;
+			i = i - 1;
+		}
+
+		POSTCONDITION: x == z
+
+		Is LI true before first iteration?
+		Is LI true after each iteration?
+		If loop terminates, do loop exit condition and LI imply postcondition?
+		Does the loop terminate?
+
+		Proof
+			Base Case: 	Initially, i == x and z == 0 gives us i + z = x, therefore LI holds at iteration 0
+						(before the loop executes) from precondition x >= 0 && i == x -> i >= 0
+
+			Induction:	Assuming i + z == x holds after iteration k, we show that i + z == x holds after iteration k + 1
+
+						z_new == z + 1		and 		i_new == i - 1
+
+						Therefore, i_new + z_new == i - 1 + z + 1 == i + z == x at iteration k, i > 0 or we have exited
+						loop, i_new = i - 1 -> i >= 0
+
+			Termination:	If loop terminates, we know i <= 0
+							{ !(i > 0) && (i >= 0 && i + z == x) }		!(i > 0) from while loop, rest from LI
+							Therefore, i == 0 && i + z == x, and z == x
+
+		- Reasoning about loops using induction
+			- i + z == x is a loop invariant, meaning that is holds true befor the loop and also after each/every
+			iteration of the loop
+			- Even though i and z change within the loop code, i + z == x stays true at the END of each iteration
+			- Above we made an inductive argument over the iterations of the loop
+			- Proof by induction, also called Computation Induction
+				- Establish the LI holds before iteration 0
+				- Assuming LI holds after iteration k, show that it holds for k + 1
+
+		- Loop invariant
+
+			{P}
+			while (b) S;
+			{Q}
+
+			Find an invariant, LI, such that
+			1. P -> LI 			\\ True Initially
+			2. {LI & b} S {LI}	\\ True if the loop executes
+			3. {LI & !b} -> Q 	\\ Establishes post condition
+
+			Finding the invariant is the key to reasoning about loops.
+			Inductive assertions are a "complete method of proof"
+
+		- Partial correctness
+			- Establish and prove the LI using computation induction
+			- Loop exit condition and the LI must imply the desired postcondition
+				- i == 0 (loop exit condition) and i + z == x (LI) imply z == x
+
+		- Termination
+			- Establish some decrementing function D such that
+				- D = minimum value implies loop exit condition
+					- D == minimum -> !b
+					- b is the loop condition
+				- D decreases at each loop iteration
+				- Show that D reaches its minimum
+				- Ideally, minimum D == 0
+
+		EXAMPLE
+		precondition: arr != null && arr.length == len && len >= 0; assume ints
+
+		int sum = 0;
+		int i = 0;
+		while ( i < len ) {
+			sum = sum + arr[i];
+			i = i + 1;
+		}
+
+		postcondition: (result is the sum of all elements in array arr)
+			sum == arr[0] + arr[1] + ... + arr[arr.length - 1]
+
+		LI: i <= len && sum == arr[0] + ... + arr[i - 1]
+
+		Base Case: 	Does LI hold before loop?
+					i <= len && sum == arr[0] + ... + arr[i - 1]
+
+					LI holds, given i = 0 and that no values from the array arr have been summed yet,
+					sum is initially 0. (i <= len) = (0 <= len) by precondition.
+
+		Induction:	Assume the LI holds at iteration k, does it hold at k + 1?
+
+					sum_new = sum + arr[i] = arr[0] + ... + arr[i - 1] + arr[i]
+					i_new = i + 1
+
+					sum_new == sum + arr[i_new- 1] = arr[0] + ... + arr[i_new + 1]
+					i_new <= len also holds; i < len at iteration k
+						if i == len at iteration k, there would be no k + 1
+
+		Termination: 	LI && !b -> postcondition
+						i <= len && sum == arr[0] + ... + arr[i-1] && !(i < len)
+						-> (i == len) && sum = arr[0] + ... + arr[i-1]
+						-> sum == arr[0] + ... + arr[len-1]
+						-> sum == arr[0] + ... + arr[arr.length - a]    // by precondition
+
+		Does it terminate? 	Define D = len - i // initially i = 0 and len >= 0, D >= 0
+							Loop can be rewritten:
+								while ((len - i) > 0) {		// while (D > 0)
+									sum = sum + arr[i]
+									i = i + 1 				// D_new = len - (i + 1) = (len - i) - 1 = D - 1
+								}
+
+							D decreases by 1 with each step
+							D eventually reaches 0
+							D == 0 -> loop exit condition i == len
+							When D == 0, loop exits
+
+Rules for Backward Reasoning: Method calls
+	// precondition: ???
+	x = foo()
+	// postcondition: Q
+	If method has no side effects, just like assignment
+
+	// precondition: ??
+	x = Math.abs(y)
+	// postcondition: x == 1
+	Precondition is y == 1 || y == -1
+
+Recursion
+	- A recursive routine must
+		- Have a base case
+		- Assume algorithm is valid for step k
+		- Show how to get from step k to k + 1
+		- Show that algorithm terminates
+			- Recurses toward base case
+	- A lot like computational induction
