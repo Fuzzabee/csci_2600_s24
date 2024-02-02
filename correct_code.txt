@@ -166,7 +166,7 @@ Correct Code
 
 								Which of the following are true?
 
-								{ P } code { T }	TRUE, Weaker precondition
-								{ R } code { T }	FALSE, Stronger precondition
-								{ Q } code { S }	FALSE, Weaker postcondition
-								{ Q } code { U }	TRUE, Stronger postcondition	
+								{ P } code { T }	TRUE, Stronger precondition
+								{ R } code { T }	FALSE, Weaker precondition
+								{ Q } code { S }	FALSE, Stronger postcondition
+								{ Q } code { U }	TRUE, Weaker postcondition	
